@@ -11,6 +11,7 @@ query RepairOrders {
     deviceName
     deviceSerial
     problemDescription
+    agreedPrice
     status
     assignedMaster {
       id
@@ -37,6 +38,7 @@ query RepairOrder($id: String!) {
     deviceName
     deviceSerial
     problemDescription
+    agreedPrice
     status
     assignedMaster {
       id
@@ -53,17 +55,35 @@ query RepairOrder($id: String!) {
         lastname
       }
       sparePart {
+        id
         name
+        priceRetail
+        priceRetailCurrency {
+          symbol
+        }
       }
       service {
+        id
         name
+        cost
+      }
+      stockItem {
+        id
+        serialInternal
+        serialFactory
       }
     }
     reservedStockItems {
       id
       serialInternal
+      serialFactory
       sparePart {
+        id
         name
+        priceRetail
+        priceRetailCurrency {
+          symbol
+        }
       }
     }
   }

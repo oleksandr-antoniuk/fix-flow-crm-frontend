@@ -1,0 +1,7 @@
+query Services {
+  services {
+    id
+    name
+    cost
+  }
+}

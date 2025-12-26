@@ -6,8 +6,23 @@ mutation CreateRepairOrder($data: CreateRepairOrderInput!) {
   }
 }
 
+mutation UpdateRepairOrder($data: UpdateRepairOrderInput!) {
+  updateRepairOrder(data: $data) {
+    id
+    status
+    agreedPrice
+  }
+}
+
 mutation ReserveStockItem($data: ReserveStockItemInput!) {
   reserveStockItem(data: $data) {
+    id
+    status
+  }
+}
+
+mutation UnreserveStockItem($data: UnreserveStockItemInput!) {
+  unreserveStockItem(data: $data) {
     id
     status
   }
@@ -24,5 +39,11 @@ mutation AddServiceToRepair($data: AddServiceToRepairInput!) {
   addServiceToRepair(data: $data) {
     id
     price
+  }
+}
+
+mutation RemoveRepairOrderItem($data: RemoveRepairOrderItemInput!) {
+  removeRepairOrderItem(data: $data) {
+    id
   }
 }

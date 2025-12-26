@@ -22,12 +22,14 @@ import {
 import { IconPlus, IconSearch, IconEye } from '@tabler/icons-react';
 import { useState } from 'react';
 import { AcceptRepairModal } from '@/components/repairs/accept-repair-modal';
+import { RepairCard } from '@/components/repairs/repair-card';
 import DashboardCard from '@/components/shared/DashboardCard';
 
 export default function RepairsPage() {
   const { data, loading } = useQuery(RepairOrdersDocument);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRepairId, setSelectedRepairId] = useState<string | null>(null);
 
   const filteredOrders = data?.repairOrders.filter(order => 
     order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,6 +67,14 @@ export default function RepairsPage() {
       </Box>
 
       <AcceptRepairModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      
+      {selectedRepairId && (
+        <RepairCard
+          id={selectedRepairId}
+          open={!!selectedRepairId}
+          onOpenChange={(open) => !open && setSelectedRepairId(null)}
+        />
+      )}
 
       <DashboardCard>
         <TableContainer>
@@ -94,7 +104,12 @@ export default function RepairsPage() {
                 </TableRow>
               ) : (
                 filteredOrders?.map((order) => (
-                  <TableRow key={order.id} hover>
+                  <TableRow 
+                    key={order.id} 
+                    hover 
+                    onDoubleClick={() => setSelectedRepairId(order.id)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell>
                       <Typography color="textSecondary" variant="subtitle2">
                         {new Date(order.createdAt).toLocaleDateString()}
@@ -133,7 +148,7 @@ export default function RepairsPage() {
                       />
                     </TableCell>
                     <TableCell align="right">
-                       <IconButton size="small">
+                       <IconButton size="small" onClick={() => setSelectedRepairId(order.id)}>
                           <IconEye size="18" />
                        </IconButton>
                     </TableCell>
