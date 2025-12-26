@@ -1,0 +1,30 @@
+mutation CreateCurrency($data: CreateCurrencyInput!) {
+  createCurrency(data: $data) {
+    id
+    code
+    name
+    symbol
+    isRetailDefault
+  }
+}
+
+mutation SyncNbuRates {
+  syncNbuRates {
+    id
+    rate
+    createdAt
+    currency {
+      code
+    }
+  }
+}
+
+mutation EnsureDefaultCurrencies {
+  ensureDefaultCurrencies {
+    id
+    code
+    name
+    symbol
+    isRetailDefault
+  }
+}

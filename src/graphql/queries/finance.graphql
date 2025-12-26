@@ -5,11 +5,24 @@ query Currencies {
     symbol
     name
     isRetailDefault
+    latestRate {
+      id
+      rate
+      createdAt
+    }
   }
 }
 
-query ExchangeRates($currencyId: String) {
-  exchangeRates(currencyId: $currencyId) {
+query SupportedCurrencies {
+  supportedCurrencies {
+    code
+    symbol
+    name
+  }
+}
+
+query ExchangeRates($currencyId: String, $take: Int) {
+  exchangeRates(currencyId: $currencyId, take: $take) {
     id
     rate
     effectiveDate
