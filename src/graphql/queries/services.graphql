@@ -2,6 +2,7 @@ query Services {
   services {
     id
     name
+    description
     cost
   }
 }

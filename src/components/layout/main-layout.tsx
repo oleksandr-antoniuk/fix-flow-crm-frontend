@@ -74,6 +74,7 @@ const sidebarItems: SidebarItem[] = [
   { title: 'Дашборд', icon: IconLayoutDashboard, href: '/' },
   { title: 'Ремонти', icon: IconTools, href: '/repairs' },
   { title: 'Склад', icon: IconBox, href: '/inventory' },
+  { title: 'Послуги', icon: IconTools, href: '/services' },
   { title: 'Фінанси', icon: IconCurrencyDollar, href: '/finance' },
   { title: 'Налаштування', icon: IconSettings, href: '/settings' },
 ];

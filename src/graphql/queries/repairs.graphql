@@ -50,7 +50,7 @@ query RepairOrder($id: String!) {
       customServiceName
       price
       quantity
-      master {
+      performers {
         firstname
         lastname
       }

@@ -15,6 +15,7 @@ import {
   ServicesDocument,
   SparePartsDocument,
   MeDocument,
+  UsersDocument,
 } from "@/gql/graphql"
 import {
   Dialog,
@@ -67,6 +68,8 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
 
   const { data: servicesData } = useQuery(ServicesDocument)
   const { data: sparePartsData } = useQuery(SparePartsDocument)
+  const { data: usersData } = useQuery(UsersDocument)
+  const masters = usersData?.users.filter(u => u.role === "MASTER" || u.role === "ADMIN" || u.role === "MANAGER") || []
 
   const [updateRepair] = useMutation(UpdateRepairOrderDocument)
   const [addService] = useMutation(AddServiceToRepairDocument)
@@ -77,8 +80,11 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
 
   const [agreedPrice, setAgreedPrice] = useState("")
   const [selectedService, setSelectedService] = useState("")
+  const [customServiceName, setCustomServiceName] = useState("")
   const [servicePrice, setServicePrice] = useState("")
+  const [isManualService, setIsManualService] = useState(false)
   const [partSerial, setPartSerial] = useState("")
+  const [selectedPerformers, setSelectedPerformers] = useState<string[]>([])
 
   const repair = data?.repairOrder
   const isMaster = meData?.me?.role === "MASTER"
@@ -112,18 +118,23 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
   }
 
   const handleAddService = async () => {
-    if (!selectedService) return
+    if (!selectedService && !customServiceName) return
     await addService({
       variables: {
         data: {
           repairOrderId: id,
-          serviceId: selectedService,
+          serviceId: selectedService || null,
+          customServiceName: isManualService ? customServiceName : null,
           customPrice: servicePrice || null,
+          performerIds: selectedPerformers.length > 0 ? selectedPerformers : null,
         },
       },
     })
     setSelectedService("")
+    setCustomServiceName("")
     setServicePrice("")
+    setIsManualService(false)
+    setSelectedPerformers([])
     refetch()
   }
 
@@ -147,9 +158,11 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
         data: {
           repairOrderId: id,
           stockItemId,
+          performerIds: selectedPerformers.length > 0 ? selectedPerformers : null,
         },
       },
     })
+    setSelectedPerformers([])
     refetch()
   }
 
@@ -247,30 +260,84 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
                 <Stack spacing={3}>
                   {/* Actions for Add */}
                   {canEdit && (
-                    <Box display="flex" gap={2} alignItems="flex-end">
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Додати послугу</InputLabel>
-                        <Select
-                          value={selectedService}
-                          label="Додати послугу"
-                          onChange={(e) => setSelectedService(e.target.value)}
+                    <Box display="flex" flexDirection="column" gap={2} p={2} sx={{ bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Button 
+                          variant={!isManualService ? "contained" : "outlined"} 
+                          size="small"
+                          onClick={() => setIsManualService(false)}
                         >
-                          {servicesData?.services.map((s) => (
-                            <MenuItem key={s.id} value={s.id}>{s.name} ({s.cost}₴)</MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <TextField
-                        size="small"
-                        label="Ціна"
-                        type="number"
-                        value={servicePrice}
-                        onChange={(e) => setServicePrice(e.target.value)}
-                        sx={{ width: 150 }}
-                      />
-                      <Button variant="contained" onClick={handleAddService} startIcon={<IconPlus size={18} />}>
-                        Додати
-                      </Button>
+                          Зі списку
+                        </Button>
+                        <Button 
+                          variant={isManualService ? "contained" : "outlined"} 
+                          size="small"
+                          onClick={() => setIsManualService(true)}
+                        >
+                          Вручну
+                        </Button>
+                      </Stack>
+
+                      <Box display="flex" gap={2} alignItems="flex-end">
+                        {!isManualService ? (
+                          <FormControl fullWidth size="small">
+                            <InputLabel>Виберіть послугу</InputLabel>
+                            <Select
+                              value={selectedService}
+                              label="Виберіть послугу"
+                              onChange={(e) => setSelectedService(e.target.value)}
+                            >
+                              {servicesData?.services.map((s) => (
+                                <MenuItem key={s.id} value={s.id}>{s.name} ({s.cost}₴)</MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          <TextField
+                            fullWidth
+                            size="small"
+                            label="Назва послуги"
+                            value={customServiceName}
+                            onChange={(e) => setCustomServiceName(e.target.value)}
+                          />
+                        )}
+                        <TextField
+                          size="small"
+                          label="Ціна"
+                          type="number"
+                          value={servicePrice}
+                          onChange={(e) => setServicePrice(e.target.value)}
+                          sx={{ width: 120 }}
+                        />
+                        <FormControl sx={{ minWidth: 200 }} size="small">
+                          <InputLabel>Виконавці</InputLabel>
+                          <Select
+                            multiple
+                            value={selectedPerformers}
+                            label="Виконавці"
+                            onChange={(e) => setSelectedPerformers(e.target.value as string[])}
+                            renderValue={(selected) => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => {
+                                  const master = masters.find(m => m.id === value);
+                                  return (
+                                    <Chip key={value} label={master ? `${master.firstname} ${master.lastname}` : value} size="small" />
+                                  );
+                                })}
+                              </Box>
+                            )}
+                          >
+                            {masters.map((m) => (
+                              <MenuItem key={m.id} value={m.id}>
+                                {m.firstname} {m.lastname}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <Button variant="contained" onClick={handleAddService} startIcon={<IconPlus size={18} />}>
+                          Додати
+                        </Button>
+                      </Box>
                     </Box>
                   )}
 
@@ -280,6 +347,7 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
                       <TableHead>
                         <TableRow>
                           <TableCell>Назва</TableCell>
+                          <TableCell>Виконавці</TableCell>
                           <TableCell>Тип</TableCell>
                           <TableCell align="right">Ціна</TableCell>
                           {canEdit && <TableCell align="right">Дії</TableCell>}
@@ -288,9 +356,12 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
                       <TableBody>
                         {repair?.repairOrderItems?.map((item) => (
                           <TableRow key={item.id}>
-                            <TableCell>{item.service?.name || item.sparePart?.name}</TableCell>
+                            <TableCell>{item.service?.name || item.sparePart?.name || item.customServiceName}</TableCell>
                             <TableCell>
-                              {item.service ? <Chip label="Послуга" size="small" /> : <Chip label="Запчастина" color="primary" variant="outlined" size="small" />}
+                              {item.performers?.map(p => `${p.firstname} ${p.lastname}`).join(', ') || '—'}
+                            </TableCell>
+                            <TableCell>
+                              {item.service || item.customServiceName ? <Chip label="Послуга" size="small" /> : <Chip label="Запчастина" color="primary" variant="outlined" size="small" />}
                             </TableCell>
                             <TableCell align="right">{item.price}₴</TableCell>
                             {canEdit && (
@@ -402,6 +473,38 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
                       </TableBody>
                     </Table>
                   </TableContainer>
+
+                  {/* Performer selection for installation */}
+                  {canEdit && repair?.reservedStockItems && repair.reservedStockItems.length > 0 && (
+                    <Box p={2} sx={{ bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="subtitle2" mb={1}>Виберіть виконавців для встановлення:</Typography>
+                      <FormControl fullWidth size="small">
+                        <InputLabel>Виконавці</InputLabel>
+                        <Select
+                          multiple
+                          value={selectedPerformers}
+                          label="Виконавці"
+                          onChange={(e) => setSelectedPerformers(e.target.value as string[])}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((value) => {
+                                const master = masters.find(m => m.id === value);
+                                return (
+                                  <Chip key={value} label={master ? `${master.firstname} ${master.lastname}` : value} size="small" />
+                                );
+                              })}
+                            </Box>
+                          )}
+                        >
+                          {masters.map((m) => (
+                            <MenuItem key={m.id} value={m.id}>
+                              {m.firstname} {m.lastname}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  )}
                 </Stack>
               )}
             </Box>

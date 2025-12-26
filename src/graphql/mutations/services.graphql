@@ -1,0 +1,12 @@
+mutation CreateService($data: CreateServiceInput!) {
+  createService(data: $data) {
+    id
+    name
+  }
+}
+
+mutation DeleteService($id: String!) {
+  deleteService(id: $id) {
+    id
+  }
+}
