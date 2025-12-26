@@ -1,0 +1,28 @@
+mutation CreateRepairOrder($data: CreateRepairOrderInput!) {
+  createRepairOrder(data: $data) {
+    id
+    deviceName
+    status
+  }
+}
+
+mutation ReserveStockItem($data: ReserveStockItemInput!) {
+  reserveStockItem(data: $data) {
+    id
+    status
+  }
+}
+
+mutation InstallStockItem($data: InstallStockItemInput!) {
+  installStockItem(data: $data) {
+    id
+    price
+  }
+}
+
+mutation AddServiceToRepair($data: AddServiceToRepairInput!) {
+  addServiceToRepair(data: $data) {
+    id
+    price
+  }
+}

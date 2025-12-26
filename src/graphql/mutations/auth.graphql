@@ -1,0 +1,18 @@
+mutation Login($data: LoginInput!) {
+  login(data: $data) {
+    accessToken
+    refreshToken
+    user {
+      id
+      email
+      role
+    }
+  }
+}
+
+mutation GoogleLogin($data: GoogleLoginInput!) {
+  googleLogin(data: $data) {
+    accessToken
+    refreshToken
+  }
+}

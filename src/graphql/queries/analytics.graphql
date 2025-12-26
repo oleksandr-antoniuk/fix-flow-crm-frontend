@@ -1,0 +1,7 @@
+query ProfitReport($startDate: DateTime!, $endDate: DateTime!) {
+  profitReport(startDate: $startDate, endDate: $endDate) {
+    totalRevenue
+    totalCost
+    grossProfit
+  }
+}

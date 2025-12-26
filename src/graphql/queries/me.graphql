@@ -1,0 +1,13 @@
+query Me {
+  me {
+    id
+    email
+    firstname
+    lastname
+    role
+    office {
+      id
+      name
+    }
+  }
+}

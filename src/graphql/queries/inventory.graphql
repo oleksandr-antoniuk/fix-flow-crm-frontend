@@ -1,0 +1,32 @@
+query SpareParts {
+  spareParts {
+    id
+    name
+    sku
+    manufacturer
+    description
+    priceRetail
+    priceRetailCurrency {
+      id
+      code
+      symbol
+    }
+  }
+}
+
+query StockItems($sparePartId: String) {
+  stockItems(sparePartId: $sparePartId) {
+    id
+    serialInternal
+    serialFactory
+    status
+    sparePart {
+      id
+      name
+    }
+    storageLocation {
+      id
+      name
+    }
+  }
+}

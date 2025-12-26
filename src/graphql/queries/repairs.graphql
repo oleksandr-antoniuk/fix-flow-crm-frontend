@@ -1,0 +1,70 @@
+query RepairOrders {
+  repairOrders {
+    id
+    createdAt
+    client {
+      id
+      firstname
+      lastname
+      additionalName
+    }
+    deviceName
+    deviceSerial
+    problemDescription
+    status
+    assignedMaster {
+      id
+      firstname
+      lastname
+    }
+    repairOrderItems {
+      id
+      price
+    }
+  }
+}
+
+query RepairOrder($id: String!) {
+  repairOrder(id: $id) {
+    id
+    createdAt
+    client {
+      id
+      firstname
+      lastname
+      additionalName
+    }
+    deviceName
+    deviceSerial
+    problemDescription
+    status
+    assignedMaster {
+      id
+      firstname
+      lastname
+    }
+    repairOrderItems {
+      id
+      customServiceName
+      price
+      quantity
+      master {
+        firstname
+        lastname
+      }
+      sparePart {
+        name
+      }
+      service {
+        name
+      }
+    }
+    reservedStockItems {
+      id
+      serialInternal
+      sparePart {
+        name
+      }
+    }
+  }
+}

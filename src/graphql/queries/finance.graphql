@@ -1,0 +1,20 @@
+query Currencies {
+  currencies {
+    id
+    code
+    symbol
+    name
+    isRetailDefault
+  }
+}
+
+query ExchangeRates($currencyId: String) {
+  exchangeRates(currencyId: $currencyId) {
+    id
+    rate
+    effectiveDate
+    currency {
+      code
+    }
+  }
+}
