@@ -74,38 +74,42 @@ export function AcceptRepairModal({ open, onOpenChange }: AcceptRepairModalProps
 
     let finalClientId = clientId
 
-    if (isNewClient) {
-      if (!clientFirstname || !clientEmail) return
-      
-      const { data: userData } = await createUser({
+    try {
+      if (isNewClient) {
+        if (!clientFirstname || !clientEmail) return
+        
+        const { data: userData } = await createUser({
+          variables: {
+            data: {
+              firstname: clientFirstname,
+              lastname: clientLastname,
+              email: clientEmail,
+              role: Role.Client,
+              officeId: usersData?.users[0]?.officeId || "" 
+            }
+          }
+        })
+        if (userData?.createUser) {
+          finalClientId = userData.createUser.id
+        }
+      }
+
+      if (!finalClientId && !isNewClient) return
+
+      await createRepair({
         variables: {
           data: {
-            firstname: clientFirstname,
-            lastname: clientLastname,
-            email: clientEmail,
-            role: Role.Client,
-            officeId: usersData?.users[0].officeId || "" 
+            clientId: finalClientId || null,
+            deviceName,
+            deviceSerial,
+            problemDescription,
+            assignedMasterId,
           }
         }
       })
-      if (userData?.createUser) {
-        finalClientId = userData.createUser.id
-      }
+    } catch (err) {
+      console.error("Error creating repair:", err)
     }
-
-    if (!finalClientId && !isNewClient) return
-
-    await createRepair({
-      variables: {
-        data: {
-          clientId: finalClientId || null,
-          deviceName,
-          deviceSerial,
-          problemDescription,
-          assignedMasterId,
-        }
-      }
-    })
   }
 
   return (
