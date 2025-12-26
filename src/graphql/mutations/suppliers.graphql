@@ -1,0 +1,19 @@
+mutation CreateSupplier($data: CreateSupplierInput!) {
+  createSupplier(data: $data) {
+    id
+    name
+  }
+}
+
+mutation UpdateSupplier($id: String!, $data: UpdateSupplierInput!) {
+  updateSupplier(id: $id, data: $data) {
+    id
+    name
+  }
+}
+
+mutation DeleteSupplier($id: String!) {
+  deleteSupplier(id: $id) {
+    id
+  }
+}

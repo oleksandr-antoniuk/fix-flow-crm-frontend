@@ -1,0 +1,68 @@
+query IncomingInvoices {
+  incomingInvoices {
+    id
+    invoiceNumber
+    supplierInvoiceNumber
+    dateReceived
+    totalAmount
+    supplier {
+      id
+      name
+    }
+    currency {
+      id
+      code
+      symbol
+    }
+    processedBy {
+      id
+      firstname
+      lastname
+    }
+  }
+}
+
+query IncomingInvoice($id: String!) {
+  incomingInvoice(id: $id) {
+    id
+    invoiceNumber
+    supplierInvoiceNumber
+    dateReceived
+    totalAmount
+    exchangeRateSnapshot
+    supplier {
+      id
+      name
+      address
+      phone
+    }
+    currency {
+      id
+      code
+      symbol
+    }
+    processedBy {
+      id
+      firstname
+      lastname
+    }
+    items {
+      id
+      quantity
+      pricePurchase
+      warranty
+      sparePart {
+        id
+        name
+        sku
+      }
+    }
+  }
+}
+
+mutation CreateIncomingInvoice($data: CreateIncomingInvoiceInput!) {
+  createIncomingInvoice(data: $data) {
+    id
+    invoiceNumber
+  }
+}

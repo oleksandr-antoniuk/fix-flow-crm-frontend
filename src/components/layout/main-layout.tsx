@@ -31,6 +31,9 @@ import {
   IconLogout,
   IconUser,
   IconCurrencyDollar,
+  IconUsers,
+  IconShoppingCart,
+  IconTruckDelivery,
 } from '@tabler/icons-react';
 import { useQuery } from '@apollo/client';
 import { MeDocument } from '@/gql/graphql';
@@ -74,8 +77,11 @@ const sidebarItems: SidebarItem[] = [
   { title: 'Дашборд', icon: IconLayoutDashboard, href: '/' },
   { title: 'Ремонти', icon: IconTools, href: '/repairs' },
   { title: 'Склад', icon: IconBox, href: '/inventory' },
+  { title: 'Прихід', icon: IconTruckDelivery, href: '/inbound' },
+  { title: 'Постачальники', icon: IconTruckDelivery, href: '/suppliers' },
   { title: 'Послуги', icon: IconTools, href: '/services' },
   { title: 'Фінанси', icon: IconCurrencyDollar, href: '/finance' },
+  { title: 'Користувачі', icon: IconUsers, href: '/users' },
   { title: 'Налаштування', icon: IconSettings, href: '/settings' },
 ];
 

@@ -1,0 +1,16 @@
+query Suppliers {
+  suppliers {
+    id
+    name
+    contactPerson
+    phone
+    email
+    address
+    defaultCurrencyId
+    defaultCurrency {
+      id
+      code
+      symbol
+    }
+  }
+}
