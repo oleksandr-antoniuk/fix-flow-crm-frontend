@@ -1,7 +1,0 @@
-mutation CreateSparePart($data: CreateSparePartInput!) {
-  createSparePart(data: $data) {
-    id
-    name
-    sku
-  }
-}

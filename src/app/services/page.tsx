@@ -127,7 +127,7 @@ export default function ServicesPage() {
         </TableContainer>
       </DashboardCard>
 
-      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth="sm">
+      <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} fullWidth maxWidth={false} sx={{ '& .MuiDialog-paper': { maxWidth: '800px' } }}>
         <DialogTitle>Нова послуга</DialogTitle>
         <DialogContent>
           <Stack spacing={3} mt={1}>

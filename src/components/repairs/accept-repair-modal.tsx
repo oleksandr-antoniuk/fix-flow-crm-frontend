@@ -113,7 +113,7 @@ export function AcceptRepairModal({ open, onOpenChange }: AcceptRepairModalProps
   }
 
   return (
-    <Dialog open={open} onClose={() => onOpenChange(false)} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={() => onOpenChange(false)} maxWidth={false} fullWidth>
       <Box p={3}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h5">Прийняти техніку в ремонт</Typography>

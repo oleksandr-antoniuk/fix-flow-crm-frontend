@@ -35,22 +35,22 @@ const typography: any = {
     fontWeight: 400,
   },
   body1: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     fontWeight: 400,
-    lineHeight: '1.334rem',
+    lineHeight: '1.5rem',
   },
   body2: {
-    fontSize: '0.75rem',
+    fontSize: '0.875rem',
     letterSpacing: '0rem',
     fontWeight: 400,
-    lineHeight: '1rem',
+    lineHeight: '1.25rem',
   },
   subtitle1: {
-    fontSize: '0.875rem',
+    fontSize: '1rem',
     fontWeight: 400,
   },
   subtitle2: {
-    fontSize: '0.875rem',
+    fontSize: '0.9375rem',
     fontWeight: 400,
   },
 };

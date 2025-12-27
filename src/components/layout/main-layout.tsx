@@ -1,44 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-  styled,
-  Box,
-  Container,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Stack,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  useMediaQuery,
-  Theme,
-  Avatar,
-  Menu,
-  MenuItem,
+    AppBar,
+    Avatar,
+    Box,
+    Container,
+    Drawer,
+    IconButton,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Stack,
+    styled,
+    Theme,
+    Toolbar,
+    Typography,
+    useMediaQuery,
 } from '@mui/material';
 import {
-  IconMenu2,
-  IconBellRinging,
-  IconLayoutDashboard,
-  IconTools,
-  IconBox,
-  IconSettings,
-  IconLogout,
-  IconUser,
-  IconCurrencyDollar,
-  IconUsers,
-  IconShoppingCart,
-  IconTruckDelivery,
+    IconBellRinging,
+    IconBox,
+    IconCurrencyDollar,
+    IconLayoutDashboard,
+    IconLogout,
+    IconMenu2,
+    IconSettings,
+    IconTools,
+    IconTruckDelivery,
+    IconUser,
+    IconUsers,
 } from '@tabler/icons-react';
-import { useQuery } from '@apollo/client';
-import { MeDocument } from '@/gql/graphql';
+import {useQuery} from '@apollo/client';
+import {MeDocument} from '@/gql/graphql';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 
 const MainWrapper = styled('div')(() => ({
   display: 'flex',
@@ -77,6 +76,8 @@ const sidebarItems: SidebarItem[] = [
   { title: 'Дашборд', icon: IconLayoutDashboard, href: '/' },
   { title: 'Ремонти', icon: IconTools, href: '/repairs' },
   { title: 'Склад', icon: IconBox, href: '/inventory' },
+  { title: 'Групи товарів', icon: IconBox, href: '/inventory/groups' },
+  { title: 'Виробники', icon: IconBox, href: '/inventory/manufacturers' },
   { title: 'Прихід', icon: IconTruckDelivery, href: '/inbound' },
   { title: 'Постачальники', icon: IconTruckDelivery, href: '/suppliers' },
   { title: 'Послуги', icon: IconTools, href: '/services' },

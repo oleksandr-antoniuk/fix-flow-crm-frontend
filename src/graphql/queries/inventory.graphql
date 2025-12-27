@@ -3,6 +3,111 @@ query SpareParts {
     id
     name
     sku
+    barcode
+    manufacturer
+    description
+    imageUrl
+    groupId
+    group {
+      id
+      name
+    }
+    manufacturerId
+    brand {
+      id
+      name
+    }
+    priceRetail
+    priceCustom1
+    priceCustom2
+    priceRetailCurrency {
+      id
+      code
+      symbol
+    }
+    lastPricePurchase
+    lastWarranty
+  }
+}
+
+query SparePartGroups {
+  sparePartGroups {
+    id
+    name
+    description
+  }
+}
+
+query Manufacturers {
+  manufacturers {
+    id
+    name
+    description
+  }
+}
+
+mutation CreateSparePartGroup($data: CreateSparePartGroupInput!) {
+  createSparePartGroup(data: $data) {
+    id
+    name
+  }
+}
+
+mutation UpdateSparePartGroup($id: String!, $data: UpdateSparePartGroupInput!) {
+  updateSparePartGroup(id: $id, data: $data) {
+    id
+    name
+  }
+}
+
+mutation DeleteSparePartGroup($id: String!) {
+  deleteSparePartGroup(id: $id) {
+    id
+  }
+}
+
+mutation CreateManufacturer($data: CreateManufacturerInput!) {
+  createManufacturer(data: $data) {
+    id
+    name
+  }
+}
+
+mutation UpdateManufacturer($id: String!, $data: UpdateManufacturerInput!) {
+  updateManufacturer(id: $id, data: $data) {
+    id
+    name
+  }
+}
+
+mutation DeleteManufacturer($id: String!) {
+  deleteManufacturer(id: $id) {
+    id
+  }
+}
+
+query SystemSettings($key: String!) {
+  systemSetting(key: $key) {
+    id
+    key
+    value
+  }
+}
+
+mutation UpsertSystemSetting($key: String!, $value: String!) {
+  upsertSystemSetting(key: $key, value: $value) {
+    id
+    key
+    value
+  }
+}
+
+query SparePartByBarcode($barcode: String!) {
+  sparePartByBarcode(barcode: $barcode) {
+    id
+    name
+    sku
+    barcode
     manufacturer
     description
     priceRetail
@@ -11,6 +116,42 @@ query SpareParts {
       code
       symbol
     }
+    lastPricePurchase
+    lastWarranty
+  }
+}
+
+mutation CreateSparePart($data: CreateSparePartInput!) {
+  createSparePart(data: $data) {
+    id
+    name
+    sku
+    barcode
+    manufacturer
+    description
+    priceRetail
+    priceRetailCurrencyId
+    groupId
+    manufacturerId
+    lastPricePurchase
+    lastWarranty
+  }
+}
+
+mutation UpdateSparePart($id: String!, $data: UpdateSparePartInput!) {
+  updateSparePart(id: $id, data: $data) {
+    id
+    name
+    sku
+    barcode
+    manufacturer
+    description
+    priceRetail
+    priceRetailCurrencyId
+    groupId
+    manufacturerId
+    lastPricePurchase
+    lastWarranty
   }
 }
 

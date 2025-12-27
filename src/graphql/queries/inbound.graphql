@@ -55,6 +55,7 @@ query IncomingInvoice($id: String!) {
         id
         name
         sku
+        barcode
       }
     }
   }

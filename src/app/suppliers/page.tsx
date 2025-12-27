@@ -184,7 +184,7 @@ export default function SuppliersPage() {
         </TableContainer>
       </DashboardCard>
 
-      <Dialog open={isModalOpen} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={isModalOpen} onClose={handleClose} maxWidth={false} fullWidth sx={{ '& .MuiDialog-paper': { maxWidth: '800px' } }}>
         <DialogTitle>{editingSupplier ? 'Редагувати постачальника' : 'Додати постачальника'}</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>

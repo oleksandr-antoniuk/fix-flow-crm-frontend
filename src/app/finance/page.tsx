@@ -246,7 +246,7 @@ export default function FinancePage() {
         </Grid>
       </Grid>
 
-      <Dialog open={isCurrencyModalOpen} onClose={() => setIsCurrencyModalOpen(false)} maxWidth="xs" fullWidth>
+      <Dialog open={isCurrencyModalOpen} onClose={() => setIsCurrencyModalOpen(false)} maxWidth={false} fullWidth sx={{ '& .MuiDialog-paper': { maxWidth: '500px' } }}>
         <DialogTitle>Додати робочу валюту</DialogTitle>
         <DialogContent>
           <Box component="form" sx={{ pt: 1 }}>

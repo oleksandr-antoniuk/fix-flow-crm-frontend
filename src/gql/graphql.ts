@@ -71,6 +71,11 @@ export type CreateIncomingInvoiceItemInput = {
   warranty?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateManufacturerInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export type CreateOfficeInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -118,11 +123,23 @@ export type CreateServiceInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateSparePartInput = {
+export type CreateSparePartGroupInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  imageUrl?: InputMaybe<Scalars['String']['input']>;
-  manufacturer?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+};
+
+export type CreateSparePartInput = {
+  barcode?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  groupId?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  lastPricePurchase?: InputMaybe<Scalars['String']['input']>;
+  lastWarranty?: InputMaybe<Scalars['String']['input']>;
+  manufacturer?: InputMaybe<Scalars['String']['input']>;
+  manufacturerId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  priceCustom1?: InputMaybe<Scalars['String']['input']>;
+  priceCustom2?: InputMaybe<Scalars['String']['input']>;
   priceRetail?: InputMaybe<Scalars['String']['input']>;
   priceRetailCurrencyId?: InputMaybe<Scalars['String']['input']>;
   sku?: InputMaybe<Scalars['String']['input']>;
@@ -247,6 +264,17 @@ export type LoginInput = {
   password: Scalars['String']['input'];
 };
 
+export type Manufacturer = {
+  __typename?: 'Manufacturer';
+  /** Identifies the date and time when the object was created. */
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  /** Identifies the date and time when the object was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addServiceToRepair: RepairOrderItem;
@@ -254,6 +282,7 @@ export type Mutation = {
   createCurrency: Currency;
   createExchangeRate: ExchangeRate;
   createIncomingInvoice: IncomingInvoice;
+  createManufacturer: Manufacturer;
   createOffice: Office;
   createOrganization: Organization;
   createOutgoingInvoice: OutgoingInvoice;
@@ -261,10 +290,13 @@ export type Mutation = {
   createRepairOrder: RepairOrder;
   createService: Service;
   createSparePart: SparePart;
+  createSparePartGroup: SparePartGroup;
   createStorageLocation: StorageLocation;
   createSupplier: Supplier;
   createUser: User;
+  deleteManufacturer: Manufacturer;
   deleteService: Service;
+  deleteSparePartGroup: SparePartGroup;
   deleteSupplier: Supplier;
   ensureDefaultCurrencies: Array<Currency>;
   firstUserSignup: Auth;
@@ -277,9 +309,13 @@ export type Mutation = {
   reserveStockItem: StockItem;
   syncNbuRates: Array<ExchangeRate>;
   unreserveStockItem: StockItem;
+  updateManufacturer: Manufacturer;
   updateRepairOrder: RepairOrder;
+  updateSparePart: SparePart;
+  updateSparePartGroup: SparePartGroup;
   updateSupplier: Supplier;
   updateUser: User;
+  upsertSystemSetting: SystemSetting;
 };
 
 
@@ -305,6 +341,11 @@ export type MutationCreateExchangeRateArgs = {
 
 export type MutationCreateIncomingInvoiceArgs = {
   data: CreateIncomingInvoiceInput;
+};
+
+
+export type MutationCreateManufacturerArgs = {
+  data: CreateManufacturerInput;
 };
 
 
@@ -343,6 +384,11 @@ export type MutationCreateSparePartArgs = {
 };
 
 
+export type MutationCreateSparePartGroupArgs = {
+  data: CreateSparePartGroupInput;
+};
+
+
 export type MutationCreateStorageLocationArgs = {
   data: CreateStorageLocationInput;
 };
@@ -358,7 +404,17 @@ export type MutationCreateUserArgs = {
 };
 
 
+export type MutationDeleteManufacturerArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteServiceArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteSparePartGroupArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -413,8 +469,26 @@ export type MutationUnreserveStockItemArgs = {
 };
 
 
+export type MutationUpdateManufacturerArgs = {
+  data: UpdateManufacturerInput;
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateRepairOrderArgs = {
   data: UpdateRepairOrderInput;
+};
+
+
+export type MutationUpdateSparePartArgs = {
+  data: UpdateSparePartInput;
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateSparePartGroupArgs = {
+  data: UpdateSparePartGroupInput;
+  id: Scalars['String']['input'];
 };
 
 
@@ -426,6 +500,12 @@ export type MutationUpdateSupplierArgs = {
 
 export type MutationUpdateUserArgs = {
   data: UpdateUserInput;
+};
+
+
+export type MutationUpsertSystemSettingArgs = {
+  key: Scalars['String']['input'];
+  value: Scalars['String']['input'];
 };
 
 export type Office = {
@@ -565,10 +645,10 @@ export type Query = {
   __typename?: 'Query';
   currencies: Array<Currency>;
   exchangeRates: Array<ExchangeRate>;
-  hello: Scalars['String']['output'];
   helloWorld: Scalars['String']['output'];
   incomingInvoice: IncomingInvoice;
   incomingInvoices: Array<IncomingInvoice>;
+  manufacturers: Array<Manufacturer>;
   me: User;
   office: Office;
   offices: Array<Office>;
@@ -583,12 +663,15 @@ export type Query = {
   repairOrders: Array<RepairOrder>;
   services: Array<Service>;
   sparePart: SparePart;
+  sparePartByBarcode?: Maybe<SparePart>;
+  sparePartGroups: Array<SparePartGroup>;
   spareParts: Array<SparePart>;
   stockItemBySerial?: Maybe<StockItem>;
   stockItems: Array<StockItem>;
   storageLocations: Array<StorageLocation>;
   suppliers: Array<Supplier>;
   supportedCurrencies: Array<SupportedCurrency>;
+  systemSetting?: Maybe<SystemSetting>;
   userPosts: Array<Post>;
   users: Array<User>;
 };
@@ -597,11 +680,6 @@ export type Query = {
 export type QueryExchangeRatesArgs = {
   currencyId?: InputMaybe<Scalars['String']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryHelloArgs = {
-  name: Scalars['String']['input'];
 };
 
 
@@ -652,6 +730,11 @@ export type QuerySparePartArgs = {
 };
 
 
+export type QuerySparePartByBarcodeArgs = {
+  barcode: Scalars['String']['input'];
+};
+
+
 export type QueryStockItemBySerialArgs = {
   serial: Scalars['String']['input'];
 };
@@ -664,6 +747,11 @@ export type QueryStockItemsArgs = {
 
 export type QueryStorageLocationsArgs = {
   officeId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySystemSettingArgs = {
+  key: Scalars['String']['input'];
 };
 
 export type RemoveRepairOrderItemInput = {
@@ -752,12 +840,19 @@ export type Service = {
 
 export type SparePart = {
   __typename?: 'SparePart';
+  barcode?: Maybe<Scalars['String']['output']>;
+  brand?: Maybe<Manufacturer>;
   /** Identifies the date and time when the object was created. */
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  group?: Maybe<SparePartGroup>;
+  groupId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
+  lastPricePurchase?: Maybe<Scalars['Float']['output']>;
+  lastWarranty?: Maybe<Scalars['String']['output']>;
   manufacturer?: Maybe<Scalars['String']['output']>;
+  manufacturerId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   priceCustom1?: Maybe<Scalars['Float']['output']>;
   priceCustom2?: Maybe<Scalars['Float']['output']>;
@@ -766,6 +861,17 @@ export type SparePart = {
   priceRetailCurrencyId?: Maybe<Scalars['String']['output']>;
   priceRetailUah?: Maybe<Scalars['Float']['output']>;
   sku?: Maybe<Scalars['String']['output']>;
+  /** Identifies the date and time when the object was last updated. */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type SparePartGroup = {
+  __typename?: 'SparePartGroup';
+  /** Identifies the date and time when the object was created. */
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   /** Identifies the date and time when the object was last updated. */
   updatedAt: Scalars['DateTime']['output'];
 };
@@ -839,6 +945,15 @@ export type SupportedCurrency = {
   symbol: Scalars['String']['output'];
 };
 
+export type SystemSetting = {
+  __typename?: 'SystemSetting';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  key: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type Token = {
   __typename?: 'Token';
   /** JWT access token */
@@ -851,6 +966,11 @@ export type UnreserveStockItemInput = {
   stockItemId: Scalars['String']['input'];
 };
 
+export type UpdateManufacturerInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateRepairOrderInput = {
   agreedPrice?: InputMaybe<Scalars['String']['input']>;
   assignedMasterId?: InputMaybe<Scalars['String']['input']>;
@@ -860,6 +980,28 @@ export type UpdateRepairOrderInput = {
   id: Scalars['String']['input'];
   problemDescription?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSparePartGroupInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSparePartInput = {
+  barcode?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  groupId?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
+  lastPricePurchase?: InputMaybe<Scalars['String']['input']>;
+  lastWarranty?: InputMaybe<Scalars['String']['input']>;
+  manufacturer?: InputMaybe<Scalars['String']['input']>;
+  manufacturerId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  priceCustom1?: InputMaybe<Scalars['String']['input']>;
+  priceCustom2?: InputMaybe<Scalars['String']['input']>;
+  priceRetail?: InputMaybe<Scalars['String']['input']>;
+  priceRetailCurrencyId?: InputMaybe<Scalars['String']['input']>;
+  sku?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSupplierInput = {
@@ -923,13 +1065,6 @@ export type EnsureDefaultCurrenciesMutationVariables = Exact<{ [key: string]: ne
 
 
 export type EnsureDefaultCurrenciesMutation = { __typename?: 'Mutation', ensureDefaultCurrencies: Array<{ __typename?: 'Currency', id: string, code: string, name: string, symbol: string, isRetailDefault: boolean }> };
-
-export type CreateSparePartMutationVariables = Exact<{
-  data: CreateSparePartInput;
-}>;
-
-
-export type CreateSparePartMutation = { __typename?: 'Mutation', createSparePart: { __typename?: 'SparePart', id: string, name: string, sku?: string | null } };
 
 export type CreateRepairOrderMutationVariables = Exact<{
   data: CreateRepairOrderInput;
@@ -1059,7 +1194,7 @@ export type IncomingInvoiceQueryVariables = Exact<{
 }>;
 
 
-export type IncomingInvoiceQuery = { __typename?: 'Query', incomingInvoice: { __typename?: 'IncomingInvoice', id: string, invoiceNumber: string, supplierInvoiceNumber?: string | null, dateReceived: any, totalAmount: number, exchangeRateSnapshot: number, supplier: { __typename?: 'Supplier', id: string, name: string, address?: string | null, phone?: string | null }, currency: { __typename?: 'Currency', id: string, code: string, symbol: string }, processedBy: { __typename?: 'User', id: string, firstname?: string | null, lastname?: string | null }, items?: Array<{ __typename?: 'IncomingInvoiceItem', id: string, quantity: number, pricePurchase: number, warranty?: string | null, sparePart: { __typename?: 'SparePart', id: string, name: string, sku?: string | null } }> | null } };
+export type IncomingInvoiceQuery = { __typename?: 'Query', incomingInvoice: { __typename?: 'IncomingInvoice', id: string, invoiceNumber: string, supplierInvoiceNumber?: string | null, dateReceived: any, totalAmount: number, exchangeRateSnapshot: number, supplier: { __typename?: 'Supplier', id: string, name: string, address?: string | null, phone?: string | null }, currency: { __typename?: 'Currency', id: string, code: string, symbol: string }, processedBy: { __typename?: 'User', id: string, firstname?: string | null, lastname?: string | null }, items?: Array<{ __typename?: 'IncomingInvoiceItem', id: string, quantity: number, pricePurchase: number, warranty?: string | null, sparePart: { __typename?: 'SparePart', id: string, name: string, sku?: string | null, barcode?: string | null } }> | null } };
 
 export type CreateIncomingInvoiceMutationVariables = Exact<{
   data: CreateIncomingInvoiceInput;
@@ -1071,7 +1206,98 @@ export type CreateIncomingInvoiceMutation = { __typename?: 'Mutation', createInc
 export type SparePartsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SparePartsQuery = { __typename?: 'Query', spareParts: Array<{ __typename?: 'SparePart', id: string, name: string, sku?: string | null, manufacturer?: string | null, description?: string | null, priceRetail?: number | null, priceRetailCurrency?: { __typename?: 'Currency', id: string, code: string, symbol: string } | null }> };
+export type SparePartsQuery = { __typename?: 'Query', spareParts: Array<{ __typename?: 'SparePart', id: string, name: string, sku?: string | null, barcode?: string | null, manufacturer?: string | null, description?: string | null, imageUrl?: string | null, groupId?: string | null, manufacturerId?: string | null, priceRetail?: number | null, priceCustom1?: number | null, priceCustom2?: number | null, lastPricePurchase?: number | null, lastWarranty?: string | null, group?: { __typename?: 'SparePartGroup', id: string, name: string } | null, brand?: { __typename?: 'Manufacturer', id: string, name: string } | null, priceRetailCurrency?: { __typename?: 'Currency', id: string, code: string, symbol: string } | null }> };
+
+export type SparePartGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SparePartGroupsQuery = { __typename?: 'Query', sparePartGroups: Array<{ __typename?: 'SparePartGroup', id: string, name: string, description?: string | null }> };
+
+export type ManufacturersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ManufacturersQuery = { __typename?: 'Query', manufacturers: Array<{ __typename?: 'Manufacturer', id: string, name: string, description?: string | null }> };
+
+export type CreateSparePartGroupMutationVariables = Exact<{
+  data: CreateSparePartGroupInput;
+}>;
+
+
+export type CreateSparePartGroupMutation = { __typename?: 'Mutation', createSparePartGroup: { __typename?: 'SparePartGroup', id: string, name: string } };
+
+export type UpdateSparePartGroupMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  data: UpdateSparePartGroupInput;
+}>;
+
+
+export type UpdateSparePartGroupMutation = { __typename?: 'Mutation', updateSparePartGroup: { __typename?: 'SparePartGroup', id: string, name: string } };
+
+export type DeleteSparePartGroupMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteSparePartGroupMutation = { __typename?: 'Mutation', deleteSparePartGroup: { __typename?: 'SparePartGroup', id: string } };
+
+export type CreateManufacturerMutationVariables = Exact<{
+  data: CreateManufacturerInput;
+}>;
+
+
+export type CreateManufacturerMutation = { __typename?: 'Mutation', createManufacturer: { __typename?: 'Manufacturer', id: string, name: string } };
+
+export type UpdateManufacturerMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  data: UpdateManufacturerInput;
+}>;
+
+
+export type UpdateManufacturerMutation = { __typename?: 'Mutation', updateManufacturer: { __typename?: 'Manufacturer', id: string, name: string } };
+
+export type DeleteManufacturerMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteManufacturerMutation = { __typename?: 'Mutation', deleteManufacturer: { __typename?: 'Manufacturer', id: string } };
+
+export type SystemSettingsQueryVariables = Exact<{
+  key: Scalars['String']['input'];
+}>;
+
+
+export type SystemSettingsQuery = { __typename?: 'Query', systemSetting?: { __typename?: 'SystemSetting', id: string, key: string, value: string } | null };
+
+export type UpsertSystemSettingMutationVariables = Exact<{
+  key: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+}>;
+
+
+export type UpsertSystemSettingMutation = { __typename?: 'Mutation', upsertSystemSetting: { __typename?: 'SystemSetting', id: string, key: string, value: string } };
+
+export type SparePartByBarcodeQueryVariables = Exact<{
+  barcode: Scalars['String']['input'];
+}>;
+
+
+export type SparePartByBarcodeQuery = { __typename?: 'Query', sparePartByBarcode?: { __typename?: 'SparePart', id: string, name: string, sku?: string | null, barcode?: string | null, manufacturer?: string | null, description?: string | null, priceRetail?: number | null, lastPricePurchase?: number | null, lastWarranty?: string | null, priceRetailCurrency?: { __typename?: 'Currency', id: string, code: string, symbol: string } | null } | null };
+
+export type CreateSparePartMutationVariables = Exact<{
+  data: CreateSparePartInput;
+}>;
+
+
+export type CreateSparePartMutation = { __typename?: 'Mutation', createSparePart: { __typename?: 'SparePart', id: string, name: string, sku?: string | null, barcode?: string | null, manufacturer?: string | null, description?: string | null, priceRetail?: number | null, priceRetailCurrencyId?: string | null, groupId?: string | null, manufacturerId?: string | null, lastPricePurchase?: number | null, lastWarranty?: string | null } };
+
+export type UpdateSparePartMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  data: UpdateSparePartInput;
+}>;
+
+
+export type UpdateSparePartMutation = { __typename?: 'Mutation', updateSparePart: { __typename?: 'SparePart', id: string, name: string, sku?: string | null, barcode?: string | null, manufacturer?: string | null, description?: string | null, priceRetail?: number | null, priceRetailCurrencyId?: string | null, groupId?: string | null, manufacturerId?: string | null, lastPricePurchase?: number | null, lastWarranty?: string | null } };
 
 export type StockItemsQueryVariables = Exact<{
   sparePartId?: InputMaybe<Scalars['String']['input']>;
@@ -1118,7 +1344,6 @@ export const GoogleLoginDocument = {"kind":"Document","definitions":[{"kind":"Op
 export const CreateCurrencyDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCurrency"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCurrencyInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCurrency"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"isRetailDefault"}}]}}]}}]} as unknown as DocumentNode<CreateCurrencyMutation, CreateCurrencyMutationVariables>;
 export const SyncNbuRatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SyncNbuRates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"syncNbuRates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<SyncNbuRatesMutation, SyncNbuRatesMutationVariables>;
 export const EnsureDefaultCurrenciesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"EnsureDefaultCurrencies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ensureDefaultCurrencies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"isRetailDefault"}}]}}]}}]} as unknown as DocumentNode<EnsureDefaultCurrenciesMutation, EnsureDefaultCurrenciesMutationVariables>;
-export const CreateSparePartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSparePart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSparePartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSparePart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}}]}}]}}]} as unknown as DocumentNode<CreateSparePartMutation, CreateSparePartMutationVariables>;
 export const CreateRepairOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateRepairOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRepairOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRepairOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"deviceName"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<CreateRepairOrderMutation, CreateRepairOrderMutationVariables>;
 export const UpdateRepairOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateRepairOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateRepairOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateRepairOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"agreedPrice"}}]}}]}}]} as unknown as DocumentNode<UpdateRepairOrderMutation, UpdateRepairOrderMutationVariables>;
 export const ReserveStockItemDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReserveStockItem"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ReserveStockItemInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reserveStockItem"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]} as unknown as DocumentNode<ReserveStockItemMutation, ReserveStockItemMutationVariables>;
@@ -1137,9 +1362,22 @@ export const CurrenciesDocument = {"kind":"Document","definitions":[{"kind":"Ope
 export const SupportedCurrenciesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SupportedCurrencies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"supportedCurrencies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<SupportedCurrenciesQuery, SupportedCurrenciesQueryVariables>;
 export const ExchangeRatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ExchangeRates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"currencyId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"take"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"exchangeRates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"currencyId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"currencyId"}}},{"kind":"Argument","name":{"kind":"Name","value":"take"},"value":{"kind":"Variable","name":{"kind":"Name","value":"take"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"rate"}},{"kind":"Field","name":{"kind":"Name","value":"effectiveDate"}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}}]}}]}}]}}]} as unknown as DocumentNode<ExchangeRatesQuery, ExchangeRatesQueryVariables>;
 export const IncomingInvoicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IncomingInvoices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"incomingInvoices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supplierInvoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateReceived"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}},{"kind":"Field","name":{"kind":"Name","value":"processedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}}]}}]}}]}}]} as unknown as DocumentNode<IncomingInvoicesQuery, IncomingInvoicesQueryVariables>;
-export const IncomingInvoiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IncomingInvoice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"incomingInvoice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supplierInvoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateReceived"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRateSnapshot"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}},{"kind":"Field","name":{"kind":"Name","value":"processedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"pricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"warranty"}},{"kind":"Field","name":{"kind":"Name","value":"sparePart"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}}]}}]}}]}}]}}]} as unknown as DocumentNode<IncomingInvoiceQuery, IncomingInvoiceQueryVariables>;
+export const IncomingInvoiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"IncomingInvoice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"incomingInvoice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"supplierInvoiceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"dateReceived"}},{"kind":"Field","name":{"kind":"Name","value":"totalAmount"}},{"kind":"Field","name":{"kind":"Name","value":"exchangeRateSnapshot"}},{"kind":"Field","name":{"kind":"Name","value":"supplier"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}},{"kind":"Field","name":{"kind":"Name","value":"processedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}}]}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"pricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"warranty"}},{"kind":"Field","name":{"kind":"Name","value":"sparePart"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"barcode"}}]}}]}}]}}]}}]} as unknown as DocumentNode<IncomingInvoiceQuery, IncomingInvoiceQueryVariables>;
 export const CreateIncomingInvoiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateIncomingInvoice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateIncomingInvoiceInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createIncomingInvoice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceNumber"}}]}}]}}]} as unknown as DocumentNode<CreateIncomingInvoiceMutation, CreateIncomingInvoiceMutationVariables>;
-export const SparePartsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SpareParts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spareParts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturer"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetail"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetailCurrency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}}]}}]}}]} as unknown as DocumentNode<SparePartsQuery, SparePartsQueryVariables>;
+export const SparePartsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SpareParts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spareParts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"barcode"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturer"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"group"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"manufacturerId"}},{"kind":"Field","name":{"kind":"Name","value":"brand"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"priceRetail"}},{"kind":"Field","name":{"kind":"Name","value":"priceCustom1"}},{"kind":"Field","name":{"kind":"Name","value":"priceCustom2"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetailCurrency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lastPricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"lastWarranty"}}]}}]}}]} as unknown as DocumentNode<SparePartsQuery, SparePartsQueryVariables>;
+export const SparePartGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SparePartGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sparePartGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<SparePartGroupsQuery, SparePartGroupsQueryVariables>;
+export const ManufacturersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Manufacturers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"manufacturers"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<ManufacturersQuery, ManufacturersQueryVariables>;
+export const CreateSparePartGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSparePartGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSparePartGroupInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSparePartGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CreateSparePartGroupMutation, CreateSparePartGroupMutationVariables>;
+export const UpdateSparePartGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSparePartGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateSparePartGroupInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateSparePartGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<UpdateSparePartGroupMutation, UpdateSparePartGroupMutationVariables>;
+export const DeleteSparePartGroupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteSparePartGroup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteSparePartGroup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteSparePartGroupMutation, DeleteSparePartGroupMutationVariables>;
+export const CreateManufacturerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateManufacturer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateManufacturerInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createManufacturer"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CreateManufacturerMutation, CreateManufacturerMutationVariables>;
+export const UpdateManufacturerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateManufacturer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateManufacturerInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateManufacturer"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<UpdateManufacturerMutation, UpdateManufacturerMutationVariables>;
+export const DeleteManufacturerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteManufacturer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteManufacturer"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<DeleteManufacturerMutation, DeleteManufacturerMutationVariables>;
+export const SystemSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SystemSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"key"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"systemSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"Variable","name":{"kind":"Name","value":"key"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]} as unknown as DocumentNode<SystemSettingsQuery, SystemSettingsQueryVariables>;
+export const UpsertSystemSettingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertSystemSetting"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"key"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"value"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertSystemSetting"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"key"},"value":{"kind":"Variable","name":{"kind":"Name","value":"key"}}},{"kind":"Argument","name":{"kind":"Name","value":"value"},"value":{"kind":"Variable","name":{"kind":"Name","value":"value"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"key"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]} as unknown as DocumentNode<UpsertSystemSettingMutation, UpsertSystemSettingMutationVariables>;
+export const SparePartByBarcodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SparePartByBarcode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"barcode"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sparePartByBarcode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"barcode"},"value":{"kind":"Variable","name":{"kind":"Name","value":"barcode"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"barcode"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturer"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetail"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetailCurrency"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}}]}},{"kind":"Field","name":{"kind":"Name","value":"lastPricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"lastWarranty"}}]}}]}}]} as unknown as DocumentNode<SparePartByBarcodeQuery, SparePartByBarcodeQueryVariables>;
+export const CreateSparePartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateSparePart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateSparePartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createSparePart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"barcode"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturer"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetail"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetailCurrencyId"}},{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturerId"}},{"kind":"Field","name":{"kind":"Name","value":"lastPricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"lastWarranty"}}]}}]}}]} as unknown as DocumentNode<CreateSparePartMutation, CreateSparePartMutationVariables>;
+export const UpdateSparePartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateSparePart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateSparePartInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateSparePart"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"barcode"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturer"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetail"}},{"kind":"Field","name":{"kind":"Name","value":"priceRetailCurrencyId"}},{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"manufacturerId"}},{"kind":"Field","name":{"kind":"Name","value":"lastPricePurchase"}},{"kind":"Field","name":{"kind":"Name","value":"lastWarranty"}}]}}]}}]} as unknown as DocumentNode<UpdateSparePartMutation, UpdateSparePartMutationVariables>;
 export const StockItemsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"StockItems"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sparePartId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stockItems"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sparePartId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sparePartId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"serialInternal"}},{"kind":"Field","name":{"kind":"Name","value":"serialFactory"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"sparePart"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"storageLocation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<StockItemsQuery, StockItemsQueryVariables>;
 export const MeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"office"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<MeQuery, MeQueryVariables>;
 export const RepairOrdersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RepairOrders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repairOrders"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}},{"kind":"Field","name":{"kind":"Name","value":"additionalName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"deviceName"}},{"kind":"Field","name":{"kind":"Name","value":"deviceSerial"}},{"kind":"Field","name":{"kind":"Name","value":"problemDescription"}},{"kind":"Field","name":{"kind":"Name","value":"agreedPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"assignedMaster"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstname"}},{"kind":"Field","name":{"kind":"Name","value":"lastname"}}]}},{"kind":"Field","name":{"kind":"Name","value":"repairOrderItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]}}]}}]} as unknown as DocumentNode<RepairOrdersQuery, RepairOrdersQueryVariables>;

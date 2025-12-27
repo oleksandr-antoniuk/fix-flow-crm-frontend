@@ -191,7 +191,7 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
   const totalPrice = repair?.repairOrderItems?.reduce((sum, item) => sum + (item.price || 0), 0) || 0
 
   return (
-    <Dialog open={open} onClose={() => onOpenChange(false)} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={() => onOpenChange(false)} maxWidth={false} fullWidth>
       <Box p={3}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h4">Картка ремонту #{repair?.id.slice(-6).toUpperCase()}</Typography>

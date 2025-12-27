@@ -255,6 +255,8 @@ const components: any = (theme: Theme) => {
       styleOverrides: {
         root: {
           borderBottom: `1px solid ${theme.palette.divider}`,
+          fontSize: '0.9375rem',
+          padding: '16px',
         },
       },
     },
@@ -370,9 +372,11 @@ const components: any = (theme: Theme) => {
         },
         input: {
           padding: '12px 14px',
+          fontSize: '1rem',
         },
         inputSizeSmall: {
           padding: '8px 14px',
+          fontSize: '0.9375rem',
         },
       },
     },
@@ -391,10 +395,44 @@ const components: any = (theme: Theme) => {
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          width: '100%',
+          maxWidth: '1920px',
+          margin: theme.spacing(2),
+          [theme.breakpoints.down('sm')]: {
+            margin: theme.spacing(1),
+          },
+        },
+        paperScrollPaper: {
+          maxHeight: 'calc(100% - 32px)',
+          [theme.breakpoints.down('sm')]: {
+            maxHeight: 'calc(100% - 16px)',
+          },
+        },
+      },
+    },
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          fontSize: '1.25rem',
+          fontSize: '1.5rem',
+          fontWeight: 600,
+          padding: '24px',
+        },
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: '24px',
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: {
+          padding: '24px',
         },
       },
     },

@@ -67,7 +67,7 @@ export default function InvoicePrintModal({ isOpen, onClose, invoiceId }: Props)
   const invoice = data?.incomingInvoice;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={isOpen} onClose={onClose} maxWidth={false} fullWidth sx={{ '& .MuiDialog-paper': { maxWidth: '1000px' } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         Перегляд накладної
         <Button variant="outlined" startIcon={<IconPrinter size={18} />} onClick={handlePrint}>
@@ -111,7 +111,7 @@ export default function InvoicePrintModal({ isOpen, onClose, invoiceId }: Props)
                   <TableRow>
                     <TableCell><strong>#</strong></TableCell>
                     <TableCell><strong>Запчастина / Товар</strong></TableCell>
-                    <TableCell><strong>SKU</strong></TableCell>
+                    <TableCell><strong>SKU / Штрих-код</strong></TableCell>
                     <TableCell align="right"><strong>К-сть</strong></TableCell>
                     <TableCell align="right"><strong>Ціна</strong></TableCell>
                     <TableCell align="right"><strong>Сума</strong></TableCell>
@@ -121,8 +121,15 @@ export default function InvoicePrintModal({ isOpen, onClose, invoiceId }: Props)
                   {invoice.items?.map((item, index) => (
                     <TableRow key={item.id}>
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item.sparePart.name}</TableCell>
-                      <TableCell>{item.sparePart.sku || '—'}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600}>{item.sparePart.name}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="caption" display="block">SKU: {item.sparePart.sku || '—'}</Typography>
+                        {item.sparePart.barcode && (
+                          <Typography variant="caption" display="block">BC: {item.sparePart.barcode}</Typography>
+                        )}
+                      </TableCell>
                       <TableCell align="right">{item.quantity}</TableCell>
                       <TableCell align="right">{Number(item.pricePurchase).toFixed(2)}</TableCell>
                       <TableCell align="right">{(item.quantity * Number(item.pricePurchase)).toFixed(2)}</TableCell>

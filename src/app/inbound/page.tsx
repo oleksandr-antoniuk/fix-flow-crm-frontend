@@ -1,43 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import {useState} from 'react';
+import {useMutation, useQuery} from '@apollo/client';
 import {
-  IncomingInvoicesDocument,
-  SuppliersDocument,
-  CurrenciesDocument,
-  SparePartsDocument,
-  CreateIncomingInvoiceDocument,
-  CreateSparePartDocument,
+    CreateIncomingInvoiceDocument,
+    CreateSparePartDocument,
+    CurrenciesDocument,
+    IncomingInvoicesDocument,
+    SparePartsDocument,
+    SuppliersDocument,
 } from '@/gql/graphql';
-import { MainLayout } from '@/components/layout/main-layout';
+import {MainLayout} from '@/components/layout/main-layout';
 import {
-  Typography,
-  Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
-  CircularProgress,
-  Autocomplete,
+    Box,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Tooltip,
+    Typography,
 } from '@mui/material';
-import { IconPlus, IconEye, IconPrinter, IconTrash, IconFilePlus } from '@tabler/icons-react';
+import {IconBarcode, IconEye, IconFilePlus, IconHash, IconPrinter, IconTrash} from '@tabler/icons-react';
 import DashboardCard from '@/components/shared/DashboardCard';
 import InvoicePrintModal from '@/components/inbound/InvoicePrintModal';
+import {InboundItemForm} from '@/components/inbound/InboundItemForm';
 
 export default function InboundPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -55,20 +56,11 @@ export default function InboundPage() {
       quantity: number; 
       pricePurchase: string; 
       name?: string;
+      barcode?: string;
       warranty?: string;
       serials?: string[];
     }[],
   });
-
-  const [newItem, setNewItem] = useState({
-    sparePartId: '',
-    quantity: 1,
-    pricePurchase: '',
-    warranty: '',
-    serials: [] as string[],
-  });
-
-  const [barcodeScan, setBarcodeScan] = useState('');
 
   const { data: invoicesData, loading: invoicesLoading, refetch } = useQuery(IncomingInvoicesDocument);
   const { data: suppliersData } = useQuery(SuppliersDocument);
@@ -94,21 +86,21 @@ export default function InboundPage() {
     },
   });
 
-  const handleAddItem = () => {
-    if (!newItem.sparePartId || !newItem.quantity || !newItem.pricePurchase) return;
-    
-    const part = sparePartsData?.spareParts.find(p => p.id === newItem.sparePartId);
-    
+  const handleAddItem = async (item: any) => {
     setFormData({
       ...formData,
-      items: [...formData.items, { ...newItem, name: part?.name }],
-    });
-    setNewItem({ 
-      sparePartId: '', 
-      quantity: 1, 
-      pricePurchase: '',
-      warranty: '',
-      serials: []
+      items: [
+        ...formData.items,
+        {
+          sparePartId: item.sparePartId,
+          quantity: item.quantity,
+          pricePurchase: item.pricePurchase,
+          name: item.name,
+          barcode: item.barcode,
+          warranty: item.warranty,
+          serials: item.serials,
+        },
+      ],
     });
   };
 
@@ -216,7 +208,7 @@ export default function InboundPage() {
       </DashboardCard>
 
       {/* Create Modal */}
-      <Dialog open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} maxWidth={false} fullWidth>
         <DialogTitle>Нова прихідна накладна</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
@@ -278,208 +270,79 @@ export default function InboundPage() {
               </FormControl>
             </Stack>
 
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography variant="h6">Товари</Typography>
-              <TextField
-                size="small"
-                label="Сканувати штрих-код (SKU)"
-                value={barcodeScan}
-                onChange={(e) => setBarcodeScan(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const part = sparePartsData?.spareParts.find(p => p.sku === barcodeScan);
-                    if (part) {
-                      setFormData({
-                        ...formData,
-                        items: [...formData.items, { 
-                          sparePartId: part.id, 
-                          quantity: 1, 
-                          pricePurchase: String(part.priceRetail || '0'), 
-                          name: part.name 
-                        }],
-                      });
-                      setBarcodeScan('');
-                    } else {
-                      alert('Запчастину з таким SKU не знайдено');
-                    }
-                  }
-                }}
-              />
-            </Stack>
-            <TableContainer sx={{ border: '1px solid #eee', borderRadius: 1 }}>
-              <Table size="small">
-                <TableHead sx={{ bgcolor: '#f9f9f9' }}>
-                  <TableRow>
-                    <TableCell>Запчастина</TableCell>
-                    <TableCell width={80}>К-сть</TableCell>
-                    <TableCell width={120}>Ціна зак.</TableCell>
-                    <TableCell width={120}>Сума</TableCell>
-                    <TableCell width={120}>Гарантія</TableCell>
-                    <TableCell width={50}></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {formData.items.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight={500}>{item.name}</Typography>
-                        {item.serials && item.serials.length > 0 && (
-                          <Typography variant="caption" color="textSecondary" display="block">
-                            SN: {item.serials.join(', ')}
-                          </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>{item.pricePurchase}</TableCell>
-                      <TableCell>{(Number(item.pricePurchase) * item.quantity).toFixed(2)}</TableCell>
-                      <TableCell>{item.warranty || '-'}</TableCell>
-                      <TableCell>
-                        <IconButton size="small" color="error" onClick={() => handleRemoveItem(index)}>
-                          <IconTrash size={16} />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell>
-                      <Autocomplete
-                        size="small"
-                        options={sparePartsData?.spareParts || []}
-                        getOptionLabel={(option) => typeof option === 'string' ? option : option.name}
-                        renderInput={(params) => <TextField {...params} label="Назва запчастини" />}
-                        freeSolo
-                        onInputChange={(_, value) => {
-                           const part = sparePartsData?.spareParts.find(p => p.name === value);
-                           if (part) {
-                             setNewItem({ ...newItem, sparePartId: part.id });
-                           } else {
-                             // This is a new part name
-                             setNewItem({ ...newItem, sparePartId: 'NEW', name: value } as any);
-                           }
-                        }}
-                        onChange={(_, value) => {
-                          if (typeof value === 'string') {
-                            setNewItem({ ...newItem, sparePartId: 'NEW', name: value } as any);
-                          } else {
-                            setNewItem({ ...newItem, sparePartId: value?.id || '' });
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        size="small"
-                        type="number"
-                        value={newItem.quantity}
-                        onChange={(e) => {
-                          const qty = parseInt(e.target.value) || 1;
-                          setNewItem({ 
-                            ...newItem, 
-                            quantity: qty,
-                            serials: Array(qty).fill('') 
-                          });
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        size="small"
-                        placeholder="0.00"
-                        value={newItem.pricePurchase}
-                        onChange={(e) => setNewItem({ ...newItem, pricePurchase: e.target.value })}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {(Number(newItem.pricePurchase) * newItem.quantity).toFixed(2)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        size="small"
-                        placeholder="12 міс."
-                        value={newItem.warranty}
-                        onChange={(e) => setNewItem({ ...newItem, warranty: e.target.value })}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton color="primary" onClick={async () => {
-                        let sparePartId = newItem.sparePartId;
-                        let partName = sparePartsData?.spareParts.find(p => p.id === sparePartId)?.name;
-
-                        if (sparePartId === 'NEW') {
-                          // Create new spare part first
-                          const { data } = await createSparePart({
-                            variables: { data: { name: (newItem as any).name } }
-                          });
-                          sparePartId = data.createSparePart.id;
-                          partName = data.createSparePart.name;
-                        }
-
-                        if (!sparePartId) return;
-
-                        setFormData({
-                          ...formData,
-                          items: [...formData.items, { 
-                            sparePartId, 
-                            quantity: newItem.quantity, 
-                            pricePurchase: newItem.pricePurchase,
-                            name: partName,
-                            warranty: newItem.warranty,
-                            serials: newItem.serials
-                          }],
-                        });
-                        setNewItem({ 
-                          sparePartId: '', 
-                          quantity: 1, 
-                          pricePurchase: '', 
-                          warranty: '',
-                          serials: []
-                        });
-                      }}>
-                        <IconPlus size={20} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                  {/* Serials Input Row */}
-                  {newItem.quantity > 0 && newItem.sparePartId && (
+            <Typography variant="h6">Товари</Typography>
+            <Box sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
+              <TableContainer sx={{ flexGrow: 1, overflow: 'auto', border: '1px solid #eee', borderRadius: 1, maxHeight: '500px' }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
                     <TableRow>
-                      <TableCell colSpan={6} sx={{ p: 2, bgcolor: '#fcfcfc' }}>
-                         <Typography variant="caption" fontWeight={600} gutterBottom display="block">
-                           Серійні номери (через Enter або сканер):
-                         </Typography>
-                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                           {Array.from({ length: newItem.quantity }).map((_, i) => (
-                             <TextField
-                               key={i}
-                               size="small"
-                               placeholder={`SN ${i + 1}`}
-                               sx={{ width: 150 }}
-                               value={newItem.serials[i] || ''}
-                               onChange={(e) => {
-                                 const newSerials = [...newItem.serials];
-                                 newSerials[i] = e.target.value;
-                                 setNewItem({ ...newItem, serials: newSerials });
-                               }}
-                               onKeyDown={(e) => {
-                                 if (e.key === 'Enter') {
-                                   e.preventDefault();
-                                   // Focus next serial or add button
-                                   const inputs = document.querySelectorAll('input[placeholder^="SN"]');
-                                   const next = inputs[i+1] as HTMLInputElement;
-                                   if (next) next.focus();
-                                 }
-                               }}
-                             />
-                           ))}
-                         </Stack>
-                      </TableCell>
+                      <TableCell>Запчастина</TableCell>
+                      <TableCell>Штрих-код</TableCell>
+                      <TableCell>Серійні номери</TableCell>
+                      <TableCell width={80}>К-сть</TableCell>
+                      <TableCell width={120}>Ціна зак.</TableCell>
+                      <TableCell width={120}>Сума</TableCell>
+                      <TableCell width={120}>Гарантія</TableCell>
+                      <TableCell width={50}></TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {formData.items.map((item, index) => (
+                      <TableRow key={index} hover>
+                        <TableCell>
+                          <Typography variant="body2" fontWeight={600}>
+                            {item.name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          {item.barcode && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <IconBarcode size={16} color="gray" />
+                              <Typography variant="body2">
+                                {item.barcode}
+                              </Typography>
+                            </Box>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {item.serials && item.serials.length > 0 && (
+                            <Tooltip title={item.serials.join(', ')}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <IconHash size={16} color="gray" />
+                                <Typography variant="body2">
+                                  {item.serials.length} од.
+                                </Typography>
+                              </Box>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell>{item.pricePurchase}</TableCell>
+                        <TableCell>{(Number(item.pricePurchase) * item.quantity).toFixed(2)}</TableCell>
+                        <TableCell>{item.warranty || '-'}</TableCell>
+                        <TableCell>
+                          <IconButton size="small" color="error" onClick={() => handleRemoveItem(index)}>
+                            <IconTrash size={18} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {formData.items.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                          <Typography color="textSecondary">Додайте товари до накладної</Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <Box sx={{ mt: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, bgcolor: '#fcfcfc' }}>
+                <Typography variant="subtitle2" gutterBottom fontWeight={600}>Додати нову позицію:</Typography>
+                <InboundItemForm spareParts={(sparePartsData?.spareParts as any) || []} onAdd={handleAddItem} />
+              </Box>
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>
