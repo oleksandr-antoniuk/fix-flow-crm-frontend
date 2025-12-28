@@ -24,8 +24,9 @@ export function Sidebar() {
   const { data } = useQuery(MeDocument);
 
   const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('token');
+    // Refresh token is in httpOnly cookie, so we can't clear it from JS.
+    // Ideally, call a logout mutation here if backend supports it.
     router.push('/login');
   };
 

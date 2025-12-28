@@ -1,7 +1,6 @@
 mutation Login($data: LoginInput!) {
   login(data: $data) {
     accessToken
-    refreshToken
     user {
       id
       email
@@ -13,6 +12,11 @@ mutation Login($data: LoginInput!) {
 mutation GoogleLogin($data: GoogleLoginInput!) {
   googleLogin(data: $data) {
     accessToken
-    refreshToken
+  }
+}
+
+mutation RefreshToken {
+  refreshToken {
+    accessToken
   }
 }
