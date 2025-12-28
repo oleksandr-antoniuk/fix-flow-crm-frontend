@@ -1,55 +1,46 @@
 "use client"
 
-import { useState } from "react"
-import { useMutation, useQuery } from "@apollo/client"
+import {useState} from "react"
+import {useMutation, useQuery} from "@apollo/client"
 import {
-  RepairOrderDocument,
-  UpdateRepairOrderDocument,
-  AddServiceToRepairDocument,
-  InstallStockItemDocument,
-  ReserveStockItemDocument,
-  UnreserveStockItemDocument,
-  RemoveRepairOrderItemDocument,
-  RepairOrdersDocument,
-  RepairStatus,
-  ServicesDocument,
-  SparePartsDocument,
-  MeDocument,
-  UsersDocument,
+    AddServiceToRepairDocument,
+    InstallStockItemDocument,
+    MeDocument,
+    RemoveRepairOrderItemDocument,
+    RepairOrderDocument,
+    RepairStatus,
+    ReserveStockItemDocument,
+    ServicesDocument,
+    SparePartsDocument,
+    UnreserveStockItemDocument,
+    UpdateRepairOrderDocument,
+    UsersDocument,
 } from "@/gql/graphql"
 import {
-  Dialog,
-  DialogContent,
-  Typography,
-  Box,
-  Grid,
-  Stack,
-  TextField,
-  Button,
-  IconButton,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Divider,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  CircularProgress,
-  Tab,
-  Tabs,
+    Box,
+    Button,
+    Chip,
+    Dialog,
+    Divider,
+    FormControl,
+    Grid,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Tabs,
+    TextField,
+    Typography,
 } from "@mui/material"
-import {
-  IconX,
-  IconPlus,
-  IconTrash,
-  IconCheck,
-  IconArrowBackUp,
-} from "@tabler/icons-react"
+import {IconArrowBackUp, IconCheck, IconPlus, IconTrash, IconX,} from "@tabler/icons-react"
 import DashboardCard from "../shared/DashboardCard"
 
 interface RepairCardProps {
@@ -102,7 +93,7 @@ export function RepairCard({ id, open, onOpenChange }: RepairCardProps) {
         },
       },
     })
-    refetch()
+    await refetch()
   }
 
   const handleStatusChange = async (status: string) => {
